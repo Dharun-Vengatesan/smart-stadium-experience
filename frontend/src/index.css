@@ -1,0 +1,110 @@
+:root {
+  --primary: #3b82f6; /* WCAG AA contrast against white */
+  --primary-dark: #2563eb;
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --text: #f8fafc;
+  --text-muted: #cbd5e1;
+  --focus-ring: #60a5fa;
+  --success: #10b981;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 1rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background: var(--primary);
+  color: white;
+  z-index: 100;
+}
+
+.app-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+nav button {
+  background: transparent;
+  border: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+nav button[aria-pressed="true"] {
+  border-bottom-color: var(--primary);
+  color: var(--text);
+  font-weight: bold;
+}
+
+nav button:focus-visible, button:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.queue-card, .nav-card {
+  background-color: var(--surface);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.gamification-prompt {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-left: 4px solid var(--success);
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+}
