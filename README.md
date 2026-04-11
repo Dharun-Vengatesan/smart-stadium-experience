@@ -44,25 +44,51 @@ The architectural core relies on processing high-throughput telemetry streams de
 - **WCAG 2.1 AA Compliant AR Navigation**: High-contrast, screen-reader enabled pathways.
 - **Offline Fallback Resilience**: Core navigation caching allows fallback routing in dead zones.
 
-## Setup Instructions (Minimal)
+### Setup Instructions & External Services
 
-1. **Deploy API Backend**:
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-   gcloud run deploy stadium-api --source . --platform managed
-   ```
-2. **Configure IAM (Security)**:
-   ```bash
-   ./infra/deploy_iam.sh
-   ```
-3. **Deploy Web Frontend**:
-   ```bash
-   cd frontend
-   npm install && npm run build
-   firebase deploy --only hosting
-   ```
-4. **Run Locust Load Test**:
-   ```bash
-   locust -f load_test/locustfile.py --host=https://your-api-url.com
-   ```
+1.  **Configure Environment Variables**:
+    Create a `.env` file in the `frontend` directory based on `.env.example`:
+    ```bash
+    cd frontend
+    cp .env.example .env
+    ```
+
+2.  **Google Maps Platform Setup**:
+    - Go to the [Google Cloud Console](https://console.cloud.google.com/).
+    - Enable the **Maps JavaScript API**.
+    - Create an API Key and restrict it to your deployment domain (optional for local dev).
+    - Add the key to `VITE_GOOGLE_MAPS_API_KEY` in your `.env`.
+
+3.  **Firebase Real-time Data Setup**:
+    - Go to the [Firebase Console](https://console.firebase.google.com/).
+    - Create a new project and add a "Web App".
+    - Copy the `firebaseConfig` object values into your `.env` (using the `VITE_FIREBASE_*` prefixes).
+    - Enable **Cloud Firestore** in test mode.
+    - Create a collection named `queues` and add documents with this structure:
+      ```json
+      {
+        "name": "North Concession",
+        "wait": 5,
+        "level": "low",
+        "insight": "Low Traffic"
+      }
+      ```
+    - The app will automatically fallback to **"Sensor unavailable"** mode if no valid configuration is detected.
+
+4.  **Local Development**:
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
+
+5.  **Deploy Web Frontend**:
+    ```bash
+    npm run build
+    firebase deploy --only hosting
+    ```
+
+6.  **Run Locust Load Test**:
+    ```bash
+    locust -f load_test/locustfile.py --host=https://your-api-url.com
+    ```

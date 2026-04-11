@@ -1,17 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavigationApp from './components/NavigationApp';
-import { Activity, Map, Utensils, Info } from 'lucide-react';
+import { Activity, Map, Utensils, Info, AlertTriangle } from 'lucide-react';
+import { QueueData, fetchLiveQueues } from './lib/firebase';
 
 function App() {
   const [activeTab, setActiveTab] = useState('navigate');
   const [demoMode, setDemoMode] = useState(false);
+  const [queues, setQueues] = useState<QueueData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for Food & Queues
-  const queues = [
-    { id: 1, name: 'North Concession', wait: 5, level: 'low', insight: 'Low Traffic' },
-    { id: 2, name: 'South Concession', wait: 18, level: 'medium', insight: 'Increasing Demand' },
-    { id: 3, name: 'Main Gate Bar', wait: 35, level: 'high', insight: 'Peak Hours' }
+  // Fallback / Default static data if Firebase is disconnected
+  const fallbackQueues: QueueData[] = [
+    { id: '1', name: 'North Concession', wait: 5, level: 'low', insight: 'Low Traffic' },
+    { id: '2', name: 'South Concession', wait: 18, level: 'medium', insight: 'Increasing Demand' },
+    { id: '3', name: 'Main Gate Bar', wait: 35, level: 'high', insight: 'Peak Hours' }
   ];
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const liveData = await fetchLiveQueues();
+        setQueues(liveData);
+        setError(null);
+      } catch (err: any) {
+        // Fallback to static data if Firebase config is missing or read fails
+        setQueues(fallbackQueues);
+        setError(err.message || 'Sensor unavailable');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [demoMode]);
 
   const getStatusClass = (level: string) => {
     switch(level) {
@@ -70,8 +93,15 @@ function App() {
           <section aria-labelledby="queue-heading" style={{ animation: 'fadeIn 0.5s ease' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <h2 id="queue-heading" style={{ margin: 0 }}>Live Queue Times</h2>
-              <div className="badge-ai" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                <Activity size={12} /> Live Updates
+              <div className="badge-ai" style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.25rem',
+                border: error ? '1px solid var(--danger)' : '1px solid rgba(168, 85, 247, 0.3)',
+                color: error ? 'var(--danger)' : '#c084fc'
+              }}>
+                {error ? <AlertTriangle size={12} /> : <Activity size={12} />}
+                {error || 'Live Updates'}
               </div>
             </div>
 

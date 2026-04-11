@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Navigation, ShieldCheck, Info, ChevronRight, Speaker, Zap } from 'lucide-react';
 import Skeleton from './Skeleton';
+import MapComponent from './MapComponent';
 
 // Type definitions matching Backend RouteResponse
 interface RouteStep {
@@ -139,6 +140,11 @@ export default function NavigationApp({ demoMode }: NavigationAppProps) {
               </div>
             </div>
           )}
+
+          {/* AI Simulation Map */}
+          <div className="glass-card" style={{ padding: 0, overflow: 'hidden', marginBottom: '1.5rem', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
+            <MapComponent />
+          </div>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <h3 style={{ margin: 0 }}>Directions</h3>
