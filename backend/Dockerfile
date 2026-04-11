@@ -1,16 +1,17 @@
-FROM python:3.10-slim
+# Use official Node.js 18 image
+FROM node:18-slim
 
-WORKDIR /app
+# Create and change to the app directory
+WORKDIR /usr/src/app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# Copy application dependency manifests to the container image
+COPY package*.json ./
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies (only production)
+RUN npm install --production
 
+# Copy local code to the container image
 COPY . .
 
-# Run uvicorn server
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Run the web service on container startup
+CMD [ "npm", "start" ]

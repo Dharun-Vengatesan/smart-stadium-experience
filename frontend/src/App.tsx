@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import NavigationApp from './components/NavigationApp';
 import { Activity, Map, Utensils, Info, AlertTriangle } from 'lucide-react';
-import { QueueData, fetchLiveQueues } from './lib/firebase';
+// import { QueueData, fetchLiveQueues } from './lib/firebase';
+
+interface QueueData {
+  id: string;
+  name: string;
+  wait: number;
+  level: 'low' | 'medium' | 'high';
+  insight: string;
+}
 
 function App() {
   const [activeTab, setActiveTab] = useState('navigate');
@@ -20,14 +28,24 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      const apiUrl = import.meta.env.VITE_API_URL;
+      
       try {
-        const liveData = await fetchLiveQueues();
+        if (!apiUrl || apiUrl === "https://YOUR_CLOUD_RUN_URL") {
+          throw new Error('Sensor unavailable: No API URL');
+        }
+
+        const response = await fetch(`${apiUrl}/api/queues`);
+        if (!response.ok) throw new Error('Sensor unavailable: API Error');
+        
+        const liveData = await response.json();
         setQueues(liveData);
         setError(null);
       } catch (err: any) {
-        // Fallback to static data if Firebase config is missing or read fails
+        // Fallback to static data if Cloud Run is not connected
+        console.warn('API Fetch failed, using fallback:', err.message);
         setQueues(fallbackQueues);
-        setError(err.message || 'Sensor unavailable');
+        setError('Sensor unavailable');
       } finally {
         setLoading(false);
       }
