@@ -35,7 +35,9 @@ function App() {
           throw new Error('Sensor unavailable: No API URL');
         }
 
-        const response = await fetch(`${apiUrl}/api/queues`);
+        // Clean URL to avoid double slashes
+        const base = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+        const response = await fetch(`${base}/api/queues`);
         if (!response.ok) throw new Error('Sensor unavailable: API Error');
         
         const liveData = await response.json();
